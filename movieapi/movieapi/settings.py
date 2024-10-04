@@ -31,6 +31,7 @@ SECRET_KEY = 'django-insecure-4ygcya&h21(uff96w-#l4oz@1609zl1zc0_p&5t(l0-9wc-$0_
 DEBUG = True
 
 ALLOWED_HOSTS = []
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 
 # Application definition
@@ -47,7 +48,6 @@ INSTALLED_APPS = [
     'reviews',
     'rest_framework.authtoken',
     'accounts',
-    'recommendations',
 ]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
