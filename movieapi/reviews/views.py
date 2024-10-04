@@ -61,3 +61,9 @@ class CommentReviewView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+class TopRatedMoviesView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request):
+        top_rated_movies = Review.objects.all().order_by('-rating', '-created_at')[:10]
+        serializer = ReviewSerializer(top_rated_movies, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
