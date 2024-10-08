@@ -10,17 +10,17 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['movie_title', 'rating']
-   
+    search_fields = ['movie__title', 'rating']  # Ensure you are searching by movie title correctly
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        # Ensure 'movie' is also being passed in
+        serializer.save(user=self.request.user)
 
     def perform_update(self, serializer):
-        serializer.save(author=self.request.user)
+        serializer.save(user=self.request.user)
 
     def perform_partial_update(self, serializer):
-        serializer.save(author=self.request.user)
+        serializer.save(user=self.request.user)
 
     def perform_destroy(self, instance):
         instance.delete()
@@ -31,7 +31,7 @@ class LikeReviewView(APIView):
     def post(self, request, pk):
         review = get_object_or_404(Review, pk=pk)
         like, created = Like.objects.get_or_create(user=request.user, review=review)
-        
+
         if created:
             like.save()
             return Response({
@@ -51,8 +51,6 @@ class UnlikeReviewView(APIView):
         
         return Response({"detail": "Review unliked successfully"}, status=status.HTTP_200_OK)
 
-
-
 class CommentReviewView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -61,18 +59,16 @@ class CommentReviewView(APIView):
         serializer = CommentSerializer(data=request.data)
         
         if serializer.is_valid():
-            serializer.save(author=request.user, review=review)  
+            serializer.save(user=request.user, review=review)  # Make sure 'user' matches your model
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class TopRatedMoviesView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         print("TopRatedMoviesView GET called")  # Debugging statement
-        top_rated_movies = Review.objects.all().order_by('-rating')[:3]
-        serializer = ReviewSerializer(top_rated_movies, many=True)
+        top_rated_reviews = Review.objects.all().order_by('-rating')[:3]
+        serializer = ReviewSerializer(top_rated_reviews, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
