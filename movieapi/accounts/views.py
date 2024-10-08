@@ -1,8 +1,9 @@
 from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.views import APIView
 from rest_framework import permissions
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from .models import CustomUser
 from reviews.models import Review 
 from rest_framework.authtoken.models import Token
@@ -34,17 +35,16 @@ class LoginView(generics.GenericAPIView):
             return Response({'token': token.key}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-class LogoutView(generics.GenericAPIView):
-    serializer_class = LogoutSerializer
-    permission_classes = [permissions.IsAuthenticated]
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        token = serializer.validated_data['token']
-        Token.objects.get(key=token).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
+        try:
+            token = Token.objects.get(user=request.user)
+            token.delete() 
+            return Response({"message": "Successfully logged out"}, status=200)
+        except Token.DoesNotExist:
+            return Response({"error": "Token not found"}, status=400)
 
 
 
