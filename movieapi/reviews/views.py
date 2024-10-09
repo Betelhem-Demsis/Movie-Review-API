@@ -10,10 +10,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['movie__title', 'rating']  # Ensure you are searching by movie title correctly
+    search_fields = ['movie__title', 'rating']  
 
     def perform_create(self, serializer):
-        # Ensure 'movie' is also being passed in
+      
         serializer.save(user=self.request.user)
 
     def perform_update(self, serializer):
@@ -59,7 +59,7 @@ class CommentReviewView(APIView):
         serializer = CommentSerializer(data=request.data)
         
         if serializer.is_valid():
-            serializer.save(user=request.user, review=review)  # Make sure 'user' matches your model
+            serializer.save(user=request.user, review=review)  
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -68,7 +68,7 @@ class TopRatedMoviesView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        print("TopRatedMoviesView GET called")  # Debugging statement
+        print("TopRatedMoviesView GET called") 
         top_rated_reviews = Review.objects.all().order_by('-rating')[:3]
         serializer = ReviewSerializer(top_rated_reviews, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
