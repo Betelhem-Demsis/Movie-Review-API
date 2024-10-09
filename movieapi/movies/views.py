@@ -25,7 +25,7 @@ def search_movie(request):
                 'imdb_id': movie.imdb_id,
                 'poster_url': movie.poster_url,
                 'overview': movie.overview,
-                'reviews': review_data  # Add reviews to the response
+                'reviews': review_data  
             }
             return Response(movie_data)
 

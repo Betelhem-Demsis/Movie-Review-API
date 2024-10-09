@@ -25,10 +25,10 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only_fields = ['created_at', 'user', 'like_count']
 
     def create(self, validated_data):
-        # You may need to extract the 'movie' ID from validated_data if it is passed as a field
+       
         movie_id = validated_data.pop('movie', None)
         review = Review.objects.create(**validated_data)
         if movie_id:
-            review.movie = movie_id  # Associate the movie with the review
+            review.movie = movie_id  
             review.save()
         return review

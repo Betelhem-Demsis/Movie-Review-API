@@ -4,11 +4,16 @@ from rest_framework.authtoken.models import Token
 from reviews.serializers import ReviewSerializer
 from django.contrib.auth import authenticate
 
+
 class UserSerializer(serializers.ModelSerializer):
+    # Including reviews as a nested serializer
     reviews = ReviewSerializer(many=True, read_only=True)
+
     class Meta:
-        model = get_user_model()
-        fields = ('id', 'username', 'email', 'bio', 'profile_picture','reviews')
+        model = get_user_model()  # Dynamically get the user model
+        fields = ('id', 'username', 'email', 'bio', 'profile_picture', 'reviews')
+
+
 class RegisterSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True, label="Confirm Password")
@@ -28,23 +33,26 @@ class RegisterSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             password=validated_data['password1']  
         )
-        Token.objects.create(user=user) 
+        # Token.objects.create(user=user) 
         return user
+
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField()
+    username = serializers.CharField()  # Username field for login
+    password = serializers.CharField()  # Password field for login
 
     def validate(self, data):
+        # Authenticate the user with the provided credentials
         user = authenticate(username=data['username'], password=data['password'])
         if user is None:
-            raise serializers.ValidationError('Invalid credentials')
-        return {'user': user}
+            raise serializers.ValidationError('Invalid credentials')  # Raise error if authentication fails
+        return {'user': user}  # Return the authenticated user
+
 
 class LogoutSerializer(serializers.Serializer):
-    token = serializers.CharField()
+    token = serializers.CharField()  # Token field for logout
 
     def validate(self, data):
+        # Delete the token to log the user out
         token = data['token']
-        Token.objects.get(key=token).delete()
+        Token.objects.get(key=token).delete()  # Remove the token from the database
         return data
-    
