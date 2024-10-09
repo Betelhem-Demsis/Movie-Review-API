@@ -11,9 +11,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]  # Allow unauthenticated users to read reviews
     filter_backends = [filters.SearchFilter]
-    search_fields = ['movie__title', 'rating']  # Enable search by movie title and rating
+    search_fields = ['movie_title', 'rating']  # Enable search by movie title and rating
 
     def perform_create(self, serializer):
+        
         # Save the review with the user as the request user
         serializer.save(user=self.request.user)
 

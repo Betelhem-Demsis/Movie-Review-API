@@ -10,9 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import dj_database_url
+from dotenv import load_dotenv
 from pathlib import Path
 from decouple import config
 import os
+
+
+load_dotenv()
 
 # Load the RapidAPI key from the .env file
 RAPIDAPI_KEY = config('RAPIDAPI_KEY')
@@ -32,7 +36,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', "False").lower()=="true"
 
-ALLOWED_HOSTS =os.environ.get("ALLOWED_HOSTS").split(" ")
+ALLOWED_HOSTS =os.environ.get("ALLOWED_HOSTS","").split(",")
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 
@@ -46,9 +50,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'movies',
     'reviews',
-    'rest_framework.authtoken',
     'accounts',
 ]
 
@@ -95,15 +99,20 @@ WSGI_APPLICATION = 'movieapi.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-database_url=os.environ.get("DATABASE_URL")
-DATABASES['default'] = dj_database_url.parse(database_url)
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.parse(DATABASE_URL)
+    }
+else:
+    # Fallback to default SQLite configuration
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / "db.sqlite3",
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

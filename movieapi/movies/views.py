@@ -1,10 +1,11 @@
-import requests
+from django.shortcuts import render
 from django.conf import settings
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Movie
 from reviews.models import Review
 from reviews.serializers import ReviewSerializer
+import requests
 
 @api_view(['GET'])
 def search_movie(request):
@@ -13,7 +14,7 @@ def search_movie(request):
     if movie_title:
         # First, try to find the movie in the local database
         movie = Movie.objects.filter(title__iexact=movie_title).first()
-
+         
         if movie:
             # If found, serialize the movie data along with reviews
             reviews = Review.objects.filter(movie=movie)
@@ -25,7 +26,7 @@ def search_movie(request):
                 'imdb_id': movie.imdb_id,
                 'poster_url': movie.poster_url,
                 'overview': movie.overview,
-                'reviews': review_data  
+                'reviews': review_data 
             }
             return Response(movie_data)
 
