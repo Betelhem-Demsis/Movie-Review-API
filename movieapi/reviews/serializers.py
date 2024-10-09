@@ -20,21 +20,14 @@ class ReviewSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
     likes = LikeSerializer(many=True, read_only=True)
     like_count = serializers.IntegerField(read_only=True)
-
+    movie_title = serializers.CharField(source='movie.title', read_only=True)
+    movie_year = serializers.CharField(source='movie.year', read_only=True)
 
     class Meta:
         model = Review
         fields = [
             'id', 'movie_title', 'review_content', 'rating', 
             'user', 'comments', 'likes', 'like_count', 
-            'created_at', 'movie'
+            'created_at', 'movie_year', 'movie'
         ]
         read_only_fields = ['created_at', 'user', 'like_count']
-
-    def create(self, validated_data):
-        movie_id = validated_data.pop('movie', None)
-        review = Review.objects.create(**validated_data)
-        if movie_id:
-            review.movie = movie_id  
-            review.save()
-        return review
