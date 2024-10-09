@@ -71,7 +71,7 @@ def search_movie(request):
                     'poster_url': poster_url,
                     'overview': overview,
                     'genre': genre,
-                    'reviews': []  # No reviews yet for a new movie
+                    'reviews': []  
                 })
             else:
                 return Response({"error": "Movie not found."}, status=404)
