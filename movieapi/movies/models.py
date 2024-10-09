@@ -3,6 +3,7 @@ from django.db import models
 
 class Movie(models.Model):
     title = models.CharField(max_length=255)
+    genre=models.CharField(max_length=100,null=True)
     imdb_id = models.CharField(max_length=15, unique=True)
     year = models.CharField(max_length=4)
     poster_url = models.URLField(max_length=500, blank=True, null=True)

@@ -22,6 +22,7 @@ def search_movie(request):
             
             movie_data = {
                 'title': movie.title,
+                'genre': movie.genre,
                 'year': movie.year,
                 'imdb_id': movie.imdb_id,
                 'poster_url': movie.poster_url,
@@ -50,6 +51,7 @@ def search_movie(request):
                 overview = movie_data_from_api.get('overview', 'Overview not available')
                 poster_url = movie_data_from_api.get('poster_path', '')
                 poster_url = f"https://image.tmdb.org/t/p/original{poster_url}" if poster_url else ''
+                genre= movie_data_from_api.get('genre', 'N/A')
 
                 # Create the movie in the local database
                 movie = Movie.objects.create(
@@ -57,7 +59,8 @@ def search_movie(request):
                     year=year,
                     imdb_id=imdb_id,
                     poster_url=poster_url,
-                    overview=overview
+                    overview=overview,
+                    genre=genre
                 )
 
                 # No reviews to return since it's a new entry
@@ -67,6 +70,7 @@ def search_movie(request):
                     'imdb_id': imdb_id,
                     'poster_url': poster_url,
                     'overview': overview,
+                    'genre': genre,
                     'reviews': []  # No reviews yet for a new movie
                 })
             else:
